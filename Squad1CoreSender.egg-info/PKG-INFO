@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: ar-edu-uade-sender
-Version: 0.1
+Name: Squad1CoreSender
+Version: 1.0
 Summary: paquete utilizado para enviar mensajes entre los módulos y el core en un proyecto académico
 Home-page: https://github.com/matiasfelau/sender-python
 Author: matiasfelau
@@ -10,6 +10,6 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
-Requires-Dist: some_package>=1.0.0
+Requires-Dist: pika
 
 # sender-python

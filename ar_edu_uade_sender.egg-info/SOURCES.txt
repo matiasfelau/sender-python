@@ -1,8 +1,0 @@
-README.md
-setup.py
-ar_edu_uade_sender.egg-info/PKG-INFO
-ar_edu_uade_sender.egg-info/SOURCES.txt
-ar_edu_uade_sender.egg-info/dependency_links.txt
-ar_edu_uade_sender.egg-info/requires.txt
-ar_edu_uade_sender.egg-info/top_level.txt
-sender/__init__.py

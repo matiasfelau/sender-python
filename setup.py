@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="ar-edu-uade-sender",  # Nombre del paquete
-    version="0.1",  # Versión del paquete
+    name="Squad1CoreSender",  # Nombre del paquete
+    version="1.0",  # Versión del paquete
     description="paquete utilizado para enviar mensajes entre los módulos y el core en un proyecto académico",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",  # Formato del README
@@ -11,7 +11,7 @@ setup(
     url="https://github.com/matiasfelau/sender-python",  # URL del proyecto
     packages=find_packages(),  # Encuentra todos los módulos automáticamente
     install_requires=[
-        "some_package>=1.0.0",  # Dependencias del paquete
+        'pika',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
