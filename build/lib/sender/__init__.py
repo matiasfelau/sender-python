@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import threading
+from enum import Enum
 
 import pika
 
@@ -25,6 +26,15 @@ def start_connection(host, port, username, password):
     except Exception as e:
         print(f'\nError in sender.start_rabbitmq_connection(): \n{str(e)}')
         return None
+
+
+def check_valid_module(module):
+    """
+    Verifica que el módulo sea un publisher válido encontrándose en el enumeration PossiblePublishers.
+    :param module: Requiere el nombre del módulo que se validará.
+    :return: Devuelve un boolean indicando si es un módulo válido o no.
+    """
+    return module in Modules
 
 
 def close_connection(connection):
@@ -52,6 +62,8 @@ def publish(connection, message, origin, destination, use_case):
     :return:
     """
     try:
+        if destination not in Modules:
+            raise Exception
         body = {
             'origin': origin,
             'destination': destination,
@@ -76,6 +88,8 @@ def start_consumer(connection, module):
     :return:
     """
     try:
+        if module not in Modules:
+            raise Exception
         t1 = threading.Thread(
             target=_consume,
             args=(connection, module,),
@@ -126,3 +140,10 @@ def _consume(connection, module):
     except Exception as e:
         print(f'\nError in sender.initialize_consumer_with_thread(): \n{str(e)}')
         return None
+
+
+class Modules(Enum):
+    E_COMMERCE = 'e_commerce'
+    GESTION_FINANCIERA = 'gestion_financiera'
+    GESTION_INTERNA = 'gestion_interna'
+    USUARIO = 'usuario'

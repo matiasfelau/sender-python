@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: Squad1CoreSender
-Version: 1.0
+Version: 1.0.2
 Summary: paquete utilizado para enviar mensajes entre los módulos y el core en un proyecto académico
 Home-page: https://github.com/matiasfelau/sender-python
 Author: matiasfelau
