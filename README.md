@@ -9,7 +9,10 @@ Este es un proyecto académico para la UADE, un paquete que permite la comunicac
 - [Ejemplo](#ejemplo)
 
 ## Instalación
-Para instalar el paquete abrí una terminal en el directorio del proyecto y escribí:
+Para instalar el paquete abrí una terminal en el directorio del proyecto (Shift + Click derecho)..
+![Paso 1](images/1.png)
+
+..y escribí:
 ```bash
 pip install Squad1CoreSender
 ```
@@ -26,16 +29,20 @@ Es importante aclarar que invocar a esta función bloqueará un hilo de procesam
 Necesitarás ingresar por parámetro una conexión (distinta a la del servicio consumidor), el mensaje en formato String, el nombre del módulo de origen, el de destino y el caso de uso que genera al mensaje.
 Recomendamos cerrar la conexión usada después de enviar un mensaje, o un lote de ellos, y abrir una nueva cuando vuelva a ser necesaria.
 
-## ACLARACIÓN
+## ACLARACIÓNES
 
-Tené en cuenta que la conexión es un objeto del tipo AutoCloseable, por lo que deberías manejar las excepciones e implementar una lógica de reconexión.
+1. Tené en cuenta que la conexión es un objeto del tipo AutoCloseable, por lo que deberías manejar las excepciones e implementar una lógica de reconexión.
+2. Los mensajes pueden ser clases convertidas a un String de formato JSON ó valores sueltos en forma de Plain String. Nuestra recomendación es usar clases, como la vista de ejemplo, para un mejor manejo de la información.
 
 ## Ejemplo
 ```Python
+import json
 import os
 
 import sender
 from sender import *
+
+from Usuario import Usuario
 
 pool_connections = []
 
@@ -53,7 +60,6 @@ for i in range(2):
 def new_callback(ch, method, properties, body):
     #Este sería el JSON que encapsula a los datos enviados desde el módulo de origen.
     #   .loads() convertirá el byte[] en un objeto manejable de Python
-    #   .dumps() convertirá el byte[] de vuelta en un JSON (formatted String)
     message = json.loads(body.decode('utf-8'))
 
     #Estos serían los datos enviados desde el módulo de origen.
@@ -64,7 +70,27 @@ sender.callback = new_callback
 
 start_consumer(pool_connections[0], Modules.USUARIO.value)
 
-publish(pool_connections[1], '¡Hola, mundo!', Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
+#Creo un usuario de prueba (es necesario que exista la clase con su función .__init__())
+usuario = Usuario(nombre='Matias')
+
+#Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su método .to_dict())
+mensaje = json.dumps(usuario.to_dict())
+
+publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
 
 close_connection(pool_connections[1])
+
+```
+
+### Clase de prueba
+```Python
+class Usuario:
+    def __init__(self, nombre):
+        self.nombre = nombre
+
+    def to_dict(self):
+        return {
+            "nombre": self.nombre
+        }
+
 ```
