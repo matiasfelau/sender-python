@@ -18,7 +18,7 @@ pip install Squad1CoreSender
 ```
 
 ## Uso
-Usá el proyecto de la siguiente manera:
+Usá el paquete de la siguiente manera:
 1. Iniciá dos conexiones con el servidor, una será para enviar mensajes y la otra para recibirlos. 
 La conexión te va a pedir especificar un host, un puerto, un usuario y una contraseña. Todos los datos te van a ser dados por el Squad del Core.
 2. Definí una función de callback, o sea lo que va a hacer tu aplicación cada vez que reciba un mensaje. Esto te va a permitir procesarlo.
