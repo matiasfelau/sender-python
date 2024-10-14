@@ -79,6 +79,7 @@ def new_callback(ch, method, properties, body):
 #Esta línea es esencial para el funcionamiento del servicio consumidor.
 sender.callback = new_callback
 
+#Aqui inicias el consumidor, que se ocupa de leer los mensajes que llegan y responder segun el sender.callback
 start_consumer(pool_connections[0], Modules.USUARIO.value)
 
 #Creo un usuario de prueba (es necesario que exista la clase con su función .__init__())
@@ -87,8 +88,10 @@ usuario = Usuario(nombre='Matias')
 #Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su método .to_dict())
 mensaje = convert_class(usuario)
 
+#Esta es la accion requerida para publicar un elemento a la cola del modulo especificado publish(conexion, mensaje, origen, DESTINO, caso de uso)
 publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
 
+#Cierra la conexion especificada
 close_connection(pool_connections[1])
 
 ```
