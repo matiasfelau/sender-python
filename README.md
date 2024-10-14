@@ -60,16 +60,22 @@ for i in range(2):
         )
     )
 
+
 def new_callback(ch, method, properties, body):
-    #Este sería el JSON que encapsula a los datos enviados desde el módulo de origen.
-    #   .loads() convertirá el byte[] en un objeto manejable de Python
-    message = json.loads(body.decode('utf-8'))
+    try:
+        #Este sería el JSON que encapsula a los datos enviados desde el módulo de origen.
+        #   .loads() convertirá el byte[] en un objeto manejable de Python.
+        message = json.loads(body.decode('utf-8'))
+    
+        #Estos serían los datos enviados desde el módulo de origen.
+        payload = message.get('payload')
+    
+        #Si los datos pertenecen a una clase podés volver a usar .loads() para convertirlos a un objeto genérico de Python.
+        usuario = json.loads(payload)
 
-    #Estos serían los datos enviados desde el módulo de origen.
-    payload = message.get('payload')
+    except Exception as e:
+        pass
 
-    #Si los datos pertenecen a una clase podés volver a usar .loads() para convertirlos a un objeto genérico de Python.
-    usuario = json.loads(payload)
 
 #Esta línea es esencial para el funcionamiento del servicio consumidor.
 sender.callback = new_callback
