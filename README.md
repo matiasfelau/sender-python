@@ -88,7 +88,7 @@ usuario = Usuario(nombre='Matias')
 #Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su método .to_dict())
 mensaje = convert_class(usuario)
 
-#Esta es la accion requerida para publicar un elemento a la cola del modulo especificado publish(conexion, mensaje, origen, DESTINO, caso de uso)
+#Esta es la accion requerida para publicar un elemento a la cola del modulo DESTINO publish(conexion, mensaje, origen, DESTINO, caso de uso)
 publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
 
 #Cierra la conexion especificada
