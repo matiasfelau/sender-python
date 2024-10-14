@@ -68,6 +68,9 @@ def new_callback(ch, method, properties, body):
     #Estos serían los datos enviados desde el módulo de origen.
     payload = message.get('payload')
 
+    #Si los datos pertenecen a una clase podés volver a usar .loads() para convertirlos a un objeto genérico de Python.
+    usuario = json.loads(payload)
+
 #Esta línea es esencial para el funcionamiento del servicio consumidor.
 sender.callback = new_callback
 
