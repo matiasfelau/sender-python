@@ -62,16 +62,15 @@ for i in range(2):
 
 
 def new_callback(ch, method, properties, body):
+    #Este sería el JSON que encapsula a los datos enviados desde el módulo de origen.
+    message = convert_body(body)
+
+    #Estos serían los datos enviados desde el módulo de origen.
+    payload = message.get('payload')
+
     try:
-        #Este sería el JSON que encapsula a los datos enviados desde el módulo de origen.
-        #   .loads() convertirá el byte[] en un objeto manejable de Python.
-        message = json.loads(body.decode('utf-8'))
-    
-        #Estos serían los datos enviados desde el módulo de origen.
-        payload = message.get('payload')
-    
-        #Si los datos pertenecen a una clase podés volver a usar .loads() para convertirlos a un objeto genérico de Python.
-        usuario = json.loads(payload)
+        #Si los datos pertenecen a una clase podés convertirlos a un objeto genérico de Python.
+        usuario = convert_payload(payload)
 
     except Exception as e:
         pass
@@ -86,7 +85,7 @@ start_consumer(pool_connections[0], Modules.USUARIO.value)
 usuario = Usuario(nombre='Matias')
 
 #Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su método .to_dict())
-mensaje = json.dumps(usuario.to_dict())
+mensaje = convert_class(usuario)
 
 publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
 
