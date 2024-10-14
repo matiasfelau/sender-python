@@ -22,7 +22,7 @@ Usá el paquete de la siguiente manera:
 1. Iniciá dos conexiones con el servidor, una será para enviar mensajes y la otra para recibirlos. 
 La conexión te va a pedir especificar un host, un puerto, un usuario y una contraseña. Todos los datos te van a ser dados por el Squad del Core.
 2. Definí una función de callback, o sea lo que va a hacer tu aplicación cada vez que reciba un mensaje. Esto te va a permitir procesarlo.
-Es importante aclarar que los mensajes viajan en formato de bytes[] así que será necesario usar decode.
+Es importante aclarar que los mensajes viajan en formato de bytes[] así que será necesario usar convert_body().
 3. Iniciá el servicio consumidor dándole una conexión e indicándole cuál es tu módulo, el cual estará restringido por el enum Modules.
 Es importante aclarar que invocar a esta función bloqueará un hilo de procesamiento para estar permanentemente a la escucha.
 4. Por último, podés usar el método publish para enviar mensajes a cualquier módulo válido. También se encuentra restringido por el enum Modules.
