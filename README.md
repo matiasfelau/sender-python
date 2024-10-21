@@ -34,6 +34,7 @@ Recomendamos cerrar la conexión usada después de enviar un mensaje, o un lote 
 > ACLARACIONES
 > 1. Tené en cuenta que la conexión es un objeto del tipo AutoCloseable, por lo que deberías manejar las excepciones e implementar una lógica de reconexión.
 > 2. Los mensajes pueden ser clases convertidas a un String de formato JSON ó valores sueltos en forma de Plain String. Nuestra recomendación es usar clases, como la vista de ejemplo, para un mejor manejo de la información.
+> 3. Los tipos de datos son: JSON, String y Array (Es un Stream con forma de Array)
 
 
 
@@ -108,3 +109,4 @@ class Usuario:
         }
 
 ```
+
