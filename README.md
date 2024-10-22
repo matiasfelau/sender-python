@@ -4,9 +4,20 @@
 Este es un proyecto académico para la UADE, un paquete que permite la comunicación entre los distintos módulos a través del Core.
 
 ## Tabla de Contenidos
+- [Changelog](#changelog)
 - [Instalación](#instalación)
 - [Uso](#uso)
 - [Ejemplo](#ejemplo)
+
+## Changelog
+
+### [1.2.1] - 2024-10-22
+- Implementación de métodos para el manejo de Arrays en los mensajes.
+
+### [1.2] - 2024-10-21
+- Implementación de headers:
+    1. token - para permitir el manejo de la autenticación con JWT.
+    2. type - para permitir un mejor manejo de los mensajes al definir el tipo de dato que fue enviado.
 
 ## Instalación
 Para instalar el paquete abrí una terminal en el directorio del proyecto (Shift + Click derecho)..
@@ -109,3 +120,6 @@ class Usuario:
         }
 
 ```
+
+> [!IMPORTANT]
+> Para versiones mayores a la 1.2.1, en caso de querer trabajar con Arrays, podés usar convert_array() para convertir una lista contenedora de Strings y JSON Strings a un mensaje y convert_string() para la función inversa.
