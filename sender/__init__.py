@@ -34,7 +34,22 @@ def check_valid_module(module):
     :param module: Requiere el nombre del módulo que se validará.
     :return: Devuelve un boolean indicando si es un módulo válido o no.
     """
-    return module in Modules
+    if module in Modules:
+        return True
+    else:
+        raise Exception
+
+
+def check_valid_type(type):
+    """
+    Verifica que el tipo de dato sea válido encontrándose en el enumeration PossibleDataTypes.
+    :param type: Requiere el nombre del tipo de dato que se validará.
+    :return: Devuelve un boolean indicando si es un tipo de dato válido o no.
+    """
+    if type in Types:
+        return True
+    else:
+        raise Exception
 
 
 def close_connection(connection):
@@ -50,10 +65,13 @@ def close_connection(connection):
         print(f'\nError in sender.close_rabbitmq_connection(): \n{str(e)}')
 
 
-def publish(connection, message, origin, destination, use_case):
+def publish(connection, message, origin, destination, use_case, token, type, target):
     """
     Envia un mensaje al módulo de destino.
     Convierte el mensaje automáticamente a un JSON.
+    :param target:
+    :param token:
+    :param type:
     :param connection: Conexión de RabbitMQ dada por el método start_rabbitmq_connection().
     :param message: Diccionario que contenga la información que debe recibir el módulo de destino.
     :param origin: Módulo desde el que se está enviando el mensaje.
@@ -62,14 +80,17 @@ def publish(connection, message, origin, destination, use_case):
     :return:
     """
     try:
-        if destination not in Modules:
-            raise Exception
+        check_valid_module(destination)
+        check_valid_type(type)
         body = {
             'origin': origin,
             'destination': destination,
             'case': use_case,
             'payload': message,
-            'status': '0'
+            'status': '0',
+            'token': token,
+            'type': type,
+            'target': target
         }
         data = json.dumps(body).encode('utf-8')
         channel = connection.channel()
@@ -142,8 +163,81 @@ def _consume(connection, module):
         return None
 
 
+def convert_body(body):
+    """
+    Convierte el body de un mensaje a un objeto JSON manejable por Python.
+    :param body:
+    :return:
+    """
+    try:
+        return json.loads(body.decode('utf-8'))
+    except Exception as e:
+        print(f'\nError in sender.convert_body(): \n{str(e)}')
+        return None
+
+
+def convert_payload(payload):
+    """
+    Convierte el payload de un body a un JSON manejable por Python
+    :param payload:
+    :return:
+    """
+    try:
+        return json.loads(payload)
+    except Exception as e:
+        print(f'\nError in sender.convert_payload(): \n{str(e)}')
+        return None
+
+
+def convert_class(clase):
+    """
+    Convierte un objeto en un JSON String para ser enviado a otro módulo.
+    :param clase:
+    :return:
+    """
+    try:
+        return json.dumps(clase.to_dict())
+    except Exception as e:
+        print(f'\nError in sender.convert_class(): \n{str(e)}')
+        return None
+
+
+def convert_array(array):
+    """
+    Convierte un Array de Strings y/o JSON String a un único String que enviar a otro módulo.
+    :param array:
+    :return:
+    """
+    try:
+        return '--!--##-->>DELIMITER<<--##--!--'.join(array)
+    except Exception as e:
+        print(f'\nError in sender.convert_array(): \n{str(e)}')
+        return None
+
+
+def convert_string(string):
+    """
+    Convierte un String con formato de Array a un Array real.
+    :param string:
+    :return:
+    """
+    try:
+        if string.find("--!--##-->>DELIMITER<<--##--!--") == -1:
+            raise Exception
+        return string.split("--!--##-->>DELIMITER<<--##--!--")
+    except Exception as e:
+        print(f'\nError in sender.convert_string(): \n{str(e)}')
+        return None
+
+
 class Modules(Enum):
     E_COMMERCE = 'e_commerce'
     GESTION_FINANCIERA = 'gestion_financiera'
     GESTION_INTERNA = 'gestion_interna'
     USUARIO = 'usuario'
+
+
+class Types(Enum):
+    STRING = 'string'
+    JSON = 'json'
+    ARRAY = 'array'
