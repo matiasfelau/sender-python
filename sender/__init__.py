@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import threading
+import uuid
 from enum import Enum
 
 import pika
@@ -118,7 +119,7 @@ def start_consumer(connection, module):
         )
         t1.start()
     except Exception as e:
-        print(f'\nError in sender.initialize_consumer_with_thread(): \n{str(e)}')
+        print(f'\nError in sender.start_consumer(): \n{str(e)}')
 
 
 def callback(ch, method, properties, body):
@@ -241,3 +242,4 @@ class Types(Enum):
     STRING = 'string'
     JSON = 'json'
     ARRAY = 'array'
+
