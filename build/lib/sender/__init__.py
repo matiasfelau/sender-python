@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import threading
+import uuid
 from enum import Enum
 
 import pika
@@ -65,10 +66,11 @@ def close_connection(connection):
         print(f'\nError in sender.close_rabbitmq_connection(): \n{str(e)}')
 
 
-def publish(connection, message, origin, destination, use_case, token, type, target):
+def publish(connection, message, origin, destination, use_case, token, type, target, status):
     """
     Envia un mensaje al módulo de destino.
     Convierte el mensaje automáticamente a un JSON.
+    :param status:
     :param target:
     :param token:
     :param type:
@@ -87,7 +89,7 @@ def publish(connection, message, origin, destination, use_case, token, type, tar
             'destination': destination,
             'case': use_case,
             'payload': message,
-            'status': '0',
+            'status': status,
             'token': token,
             'type': type,
             'target': target
@@ -118,7 +120,7 @@ def start_consumer(connection, module):
         )
         t1.start()
     except Exception as e:
-        print(f'\nError in sender.initialize_consumer_with_thread(): \n{str(e)}')
+        print(f'\nError in sender.start_consumer(): \n{str(e)}')
 
 
 def callback(ch, method, properties, body):
@@ -241,3 +243,4 @@ class Types(Enum):
     STRING = 'string'
     JSON = 'json'
     ARRAY = 'array'
+

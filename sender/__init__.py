@@ -66,10 +66,11 @@ def close_connection(connection):
         print(f'\nError in sender.close_rabbitmq_connection(): \n{str(e)}')
 
 
-def publish(connection, message, origin, destination, use_case, token, type, target):
+def publish(connection, message, origin, destination, use_case, token, type, target, status):
     """
     Envia un mensaje al módulo de destino.
     Convierte el mensaje automáticamente a un JSON.
+    :param status:
     :param target:
     :param token:
     :param type:
@@ -88,7 +89,7 @@ def publish(connection, message, origin, destination, use_case, token, type, tar
             'destination': destination,
             'case': use_case,
             'payload': message,
-            'status': '0',
+            'status': status,
             'token': token,
             'type': type,
             'target': target

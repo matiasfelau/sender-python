@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: Squad1CoreSender
-Version: 1.2.2
+Version: 1.2.4
 Summary: paquete utilizado para enviar mensajes entre los módulos y el core en un proyecto académico
 Home-page: https://github.com/matiasfelau/sender-python
 Author: matiasfelau
@@ -18,9 +18,20 @@ Requires-Dist: pika
 Este es un proyecto acadÃ©mico para la UADE, un paquete que permite la comunicaciÃ³n entre los distintos mÃ³dulos a travÃ©s del Core.
 
 ## Tabla de Contenidos
+- [Changelog](#changelog)
 - [InstalaciÃ³n](#instalaciÃ³n)
 - [Uso](#uso)
 - [Ejemplo](#ejemplo)
+
+## Changelog
+
+### [1.2.1] - 2024-10-22
+- ImplementaciÃ³n de mÃ©todos para el manejo de Arrays en los mensajes.
+
+### [1.2] - 2024-10-21
+- ImplementaciÃ³n de headers:
+    1. token - para permitir el manejo de la autenticaciÃ³n con JWT.
+    2. type - para permitir un mejor manejo de los mensajes al definir el tipo de dato que fue enviado.
 
 ## InstalaciÃ³n
 Para instalar el paquete abrÃ­ una terminal en el directorio del proyecto (Shift + Click derecho)..
@@ -32,21 +43,25 @@ pip install Squad1CoreSender
 ```
 
 ## Uso
-UsÃ¡ el proyecto de la siguiente manera:
+UsÃ¡ el paquete de la siguiente manera:
 1. IniciÃ¡ dos conexiones con el servidor, una serÃ¡ para enviar mensajes y la otra para recibirlos. 
 La conexiÃ³n te va a pedir especificar un host, un puerto, un usuario y una contraseÃ±a. Todos los datos te van a ser dados por el Squad del Core.
 2. DefinÃ­ una funciÃ³n de callback, o sea lo que va a hacer tu aplicaciÃ³n cada vez que reciba un mensaje. Esto te va a permitir procesarlo.
-Es importante aclarar que los mensajes viajan en formato de bytes[] asÃ­ que serÃ¡ necesario usar decode.
+Es importante aclarar que los mensajes viajan en formato de bytes[] asÃ­ que serÃ¡ necesario usar convert_body().
 3. IniciÃ¡ el servicio consumidor dÃ¡ndole una conexiÃ³n e indicÃ¡ndole cuÃ¡l es tu mÃ³dulo, el cual estarÃ¡ restringido por el enum Modules.
 Es importante aclarar que invocar a esta funciÃ³n bloquearÃ¡ un hilo de procesamiento para estar permanentemente a la escucha.
 4. Por Ãºltimo, podÃ©s usar el mÃ©todo publish para enviar mensajes a cualquier mÃ³dulo vÃ¡lido. TambiÃ©n se encuentra restringido por el enum Modules.
 NecesitarÃ¡s ingresar por parÃ¡metro una conexiÃ³n (distinta a la del servicio consumidor), el mensaje en formato String, el nombre del mÃ³dulo de origen, el de destino y el caso de uso que genera al mensaje.
 Recomendamos cerrar la conexiÃ³n usada despuÃ©s de enviar un mensaje, o un lote de ellos, y abrir una nueva cuando vuelva a ser necesaria.
 
-## ACLARACIÃ“NES
 
-1. TenÃ© en cuenta que la conexiÃ³n es un objeto del tipo AutoCloseable, por lo que deberÃ­as manejar las excepciones e implementar una lÃ³gica de reconexiÃ³n.
-2. Los mensajes pueden ser clases convertidas a un String de formato JSON Ã³ valores sueltos en forma de Plain String. Nuestra recomendaciÃ³n es usar clases, como la vista de ejemplo, para un mejor manejo de la informaciÃ³n.
+> [!CAUTION]
+> ACLARACIONES
+> 1. TenÃ© en cuenta que la conexiÃ³n es un objeto del tipo AutoCloseable, por lo que deberÃ­as manejar las excepciones e implementar una lÃ³gica de reconexiÃ³n.
+> 2. Los mensajes pueden ser clases convertidas a un String de formato JSON Ã³ valores sueltos en forma de Plain String. Nuestra recomendaciÃ³n es usar clases, como la vista de ejemplo, para un mejor manejo de la informaciÃ³n.
+> 3. Los tipos de datos son: JSON, String y Array (Es un Stream con forma de Array)
+
+
 
 ## Ejemplo
 ```Python
@@ -71,27 +86,38 @@ for i in range(2):
         )
     )
 
+
 def new_callback(ch, method, properties, body):
     #Este serÃ­a el JSON que encapsula a los datos enviados desde el mÃ³dulo de origen.
-    #   .loads() convertirÃ¡ el byte[] en un objeto manejable de Python
-    message = json.loads(body.decode('utf-8'))
+    message = convert_body(body)
 
     #Estos serÃ­an los datos enviados desde el mÃ³dulo de origen.
     payload = message.get('payload')
 
+    try:
+        #Si los datos pertenecen a una clase podÃ©s convertirlos a un objeto genÃ©rico de Python.
+        usuario = convert_payload(payload)
+
+    except Exception as e:
+        pass
+
+
 #Esta lÃ­nea es esencial para el funcionamiento del servicio consumidor.
 sender.callback = new_callback
 
+#Aqui inicias el consumidor, que se ocupa de leer los mensajes que llegan y responder segun el sender.callback
 start_consumer(pool_connections[0], Modules.USUARIO.value)
 
 #Creo un usuario de prueba (es necesario que exista la clase con su funciÃ³n .__init__())
 usuario = Usuario(nombre='Matias')
 
 #Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su mÃ©todo .to_dict())
-mensaje = json.dumps(usuario.to_dict())
+mensaje = convert_class(usuario)
 
-publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba')
+#Esta es la accion requerida para publicar un elemento a la cola del modulo DESTINO publish(conexion, mensaje, origen, DESTINO, caso de uso, token JWT entregado por Gestion Interna, Tipo de dato del mensaje)
+publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba', token, Types.JSON)
 
+#Cierra la conexion especificada
 close_connection(pool_connections[1])
 
 ```
@@ -108,3 +134,6 @@ class Usuario:
         }
 
 ```
+
+> [!IMPORTANT]
+> Para versiones mayores a la 1.2.1, en caso de querer trabajar con Arrays, podÃ©s usar convert_array() para convertir una lista contenedora de Strings y JSON Strings a un mensaje y convert_string() para la funciÃ³n inversa.
