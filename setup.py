@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Squad1CoreSender",  # Nombre del paquete
-    version="1.2.4",  # Versión del paquete
+    version="1.2.5",  # Versión del paquete
     description="paquete utilizado para enviar mensajes entre los módulos y el core en un proyecto académico",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",  # Formato del README
