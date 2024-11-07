@@ -118,8 +118,37 @@ class Usuario:
         return {
             "nombre": self.nombre
         }
-
 ```
 
 > [!IMPORTANT]
 > Para versiones mayores a la 1.2.1, en caso de querer trabajar con Arrays, podés usar convert_array() para convertir una lista contenedora de Strings y JSON Strings a un mensaje y convert_string() para la función inversa.
+
+> [!IMPORTANT]
+> El metodo para la autencacion es:
+```Python
+
+pool_connections = []
+pool_channels = []
+
+for i in range(1):
+    pool_connections.append(
+        start_connection(
+            '3.142.225.39',
+            5672,
+            'admin',
+            '59482*M97&!@3@%$2$r@'
+        )
+    )
+    pool_channels.append(
+        pool_connections[i].channel()
+    )
+
+auth = sender.Authenticator(pool_connections[0], pool_channels[0], Modules.USUARIO.value)
+
+json = 'ejemplo'
+
+resultado = auth.authenticate(json) # Si es aceptado recibirá un token como respuesta y sino un String vacío
+
+close_connection(pool_connections[0])
+
+```
