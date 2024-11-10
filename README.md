@@ -100,8 +100,8 @@ usuario = Usuario(nombre='Matias')
 #Convierto el usuario en un String con formato de JSON (es necesario que exista la clase con su método .to_dict())
 mensaje = convert_class(usuario)
 
-#Esta es la accion requerida para publicar un elemento a la cola del modulo DESTINO publish(conexion, mensaje, origen, DESTINO, caso de uso, token JWT entregado por Gestion Interna, Tipo de dato del mensaje)
-publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba', token, Types.JSON)
+#Esta es la accion requerida para publicar un elemento a la cola del modulo DESTINO publish(conexion, mensaje, origen, DESTINO, caso de uso, token JWT entregado por Gestion Interna, Tipo de dato del mensaje,clase objetivo en el destino (puede ser vacia), status == 600 si desea probar sin autenticacion, usuario que envia la publicacion)
+publish(pool_connections[1], mensaje, Modules.USUARIO.value, Modules.USUARIO.value, 'Prueba', token, Types.JSON, target, status, user)
 
 #Cierra la conexion especificada
 close_connection(pool_connections[1])
