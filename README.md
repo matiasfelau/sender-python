@@ -133,7 +133,7 @@ pool_channels = []
 for i in range(1):
     pool_connections.append(
         start_connection(
-            '3.141.117.124 ',
+            '3.141.117.124',
             5672,
             'admin',
             '59482*M97&!@3@%$2$r@'
